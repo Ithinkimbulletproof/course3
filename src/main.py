@@ -33,11 +33,35 @@ class Operations:
                               reverse=True)
         return ex_peration_list
 
+    @staticmethod
+    def get_formated_operation(operation, formate_date=None,
+                               hide_requisites=None):
+        """Первая полоса вывода"""
+        formated_date = formate_date(operation['date'])
+        type_operation = operation['description']
+        line_one_output = f"{formated_date} {type_operation}"
 
-def main():
+        """Второя полоса вывода"""
+        if operation.get('from'):
+            hided_from = hide_requisites(operation.get('from'))
+        else:
+            hided_from = "Нет данных"
+        hided_to = hide_requisites(operation.get('to'))
+        line_two_output = f"{hided_from} -> {hided_to}"
+
+        """Третья полоса вывода"""
+        amount = operation['operationAmount']['amount']
+        currency = operation['operationAmount']['currency']['name']
+        line_three_output = f"{amount} {currency}"
+
+        return f"{line_one_output}\n{line_two_output}\n{line_three_output}"
+
+
+def main(formate_date=None):
     operation = Operations()
     print(operation.load_operations())
     print(operation.get_date(operation.list_transfer))
+    print(operation.get_formated_operation(operation, formate_date))
 
 
 main()
