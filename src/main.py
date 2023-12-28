@@ -1,67 +1,70 @@
 import json
+import datetime
+import pathlib
 
-class Operations:
-    def __init__(self):
-        self.list_transfer = []
 
-    def __repr__(self):
-        return (f"Last user's operations\n"
-                f"{self.list_transfer}")
+def load_operations(path):
+    """Функция распаковывает json-файл"""
+    with open(path, encoding="utf-8") as file:
+        list_transfer = json.loads(file.read())
+    return list_transfer
 
-    def load_operations(self):
-        """Функция распаковывает json-файл"""
-        with open(r"C:\PycharmProjects\course3\operations.json",
-                  encoding="utf-8") as file:
-            self.list_transfer = json.loads(file.read())
-        return self.list_transfer
+def get_date(transfers_list):
+    ex_peration_list = [item for item in transfers_list if
+                        item.get('state') == "EXECUTED"]
+    ex_peration_list.sort(key=lambda x: x.get('date'),
+                          reverse=True)
+    return ex_peration_list
 
-#    def get_executed_operations(self, transfers_list):
-#        """Функция показывает операции,
-#        которые имеют статус EXECUTED"""
-#        ex_operation_list = []
-#        for state in transfers_list:
-#            if state.get("state") == "EXECUTED":
-#                ex_operation_list.append(state)
-#        self.list_transfer = ex_operation_list
-#        return ex_operation_list
-
-    @staticmethod
-    def get_date(transfers_list):
-        ex_peration_list = [item for item in transfers_list if
-                            item.get('state') == "EXECUTED"]
-        ex_peration_list.sort(key=lambda x: x.get('date'),
-                              reverse=True)
-        return ex_peration_list
-
-    @staticmethod
-    def get_formated_operation(operation, formate_date=None,
-                               hide_requisites=None):
-        """Первая полоса вывода"""
+def get_formated_operation(operations):
+    """Первая полоса вывода"""
+    for operation in operations:
         formated_date = formate_date(operation['date'])
         type_operation = operation['description']
         line_one_output = f"{formated_date} {type_operation}"
+        print(line_one_output)
 
         """Второя полоса вывода"""
-        if operation.get('from'):
-            hided_from = hide_requisites(operation.get('from'))
-        else:
-            hided_from = "Нет данных"
-        hided_to = hide_requisites(operation.get('to'))
+        hided_from = hide_requisites(operation.get('from', "Нет данных"))
+        hided_to = hide_requisites(operation.get('to', "Нет данных"))
         line_two_output = f"{hided_from} -> {hided_to}"
+        print(line_two_output)
 
         """Третья полоса вывода"""
         amount = operation['operationAmount']['amount']
         currency = operation['operationAmount']['currency']['name']
         line_three_output = f"{amount} {currency}"
+        print(line_three_output)
+        print()
 
-        return f"{line_one_output}\n{line_two_output}\n{line_three_output}"
+def hide_requisites(card_number: str):
+    """Функция прячет номера карт и счетов"""
+    list_card_info = card_number.split()
+    new_list = []
+    for info in list_card_info:
+        if 'счет' in card_number.lower() and info.isdigit():
+            new_list.append(f'**{info[-4:]}')
+        elif 'счет' not in card_number.lower() and info.isdigit():
+            new_list.append(
+                f'{info[:4]} {info[4:6]}** **** {info[-4:]}')
+        else:
+            new_list.append(info)
+    return ' '.join(new_list)
 
 
-def main(formate_date=None):
-    operation = Operations()
-    print(operation.load_operations())
-    print(operation.get_date(operation.list_transfer))
-    print(operation.get_formated_operation(operation, formate_date))
+def formate_date(date):
+    return datetime.datetime.fromisoformat(date).strftime('%d.%m.%Y')
 
+#def get_last_five_operations():
+
+
+
+def main():
+    path = pathlib.Path(__file__).parent.parent.joinpath('operations.json')
+    load_operations(path)
+    list_transfer = load_operations(path)
+    get_date(list_transfer)
+    sorted_operations = get_date(list_transfer)
+    get_formated_operation(sorted_operations)
 
 main()
