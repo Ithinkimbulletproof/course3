@@ -14,7 +14,7 @@ def get_date(transfers_list):
                         item.get('state') == "EXECUTED"]
     ex_peration_list.sort(key=lambda x: x.get('date'),
                           reverse=True)
-    return ex_peration_list
+    return ex_peration_list[:5]
 
 def get_formated_operation(operations):
     """Первая полоса вывода"""
@@ -54,9 +54,6 @@ def hide_requisites(card_number: str):
 
 def formate_date(date):
     return datetime.datetime.fromisoformat(date).strftime('%d.%m.%Y')
-
-#def get_last_five_operations():
-
 
 
 def main():
