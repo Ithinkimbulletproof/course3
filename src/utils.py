@@ -24,8 +24,8 @@ def get_formated_operation(operations):
         print(line_one_output)
 
         """Второя полоса вывода"""
-        hided_from = hide_requisites(operation.get('from', "Нет данных"))
-        hided_to = hide_requisites(operation.get('to', "Нет данных"))
+        hided_from = hide_requisites(operation.get('from', ""))
+        hided_to = hide_requisites(operation.get('to', ""))
         line_two_output = f"{hided_from} -> {hided_to}"
         print(line_two_output)
 
